@@ -293,18 +293,28 @@
         }
 
         .checklist-add-btn {
-            background: none;
+            background-color: #3a3a3a;
             border: none;
             color: #0078d4;
             cursor: pointer;
             font-size: 18px;
-            padding: 2px 8px;
+            padding: 4px 12px;
             border-radius: 4px;
             transition: background-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .checklist-add-btn:hover {
-            background-color: #3a3a3a;
+            background-color: #4a4a4a;
+        }
+
+        .checklist-add-btn:active {
+            background-color: #555;
+            transform: scale(0.95);
+        }
+
+        .timer-right {
+            cursor: default;
         }
 
         .checklist {
@@ -1225,16 +1235,20 @@
             const notes = timer.notes || [];
             const notesHtml = notes.length > 0
                 ? notes.map(note => `
-                    <li class="checklist-item">
+                    <li class="checklist-item" draggable="false">
                         <input type="checkbox" class="checklist-checkbox"
                             ${note.checked ? 'checked' : ''}
-                            onchange="toggleNote('${timer.id}', '${note.id}')">
+                            onclick="event.stopPropagation();"
+                            onchange="event.stopPropagation(); toggleNote('${timer.id}', '${note.id}')">
                         <input type="text" class="checklist-text ${note.checked ? 'checked' : ''}"
                             value="${note.text.replace(/"/g, '&quot;')}"
                             placeholder="Enter note..."
-                            onchange="updateNote('${timer.id}', '${note.id}', this.value)"
-                            onkeydown="if(event.key==='Enter'){this.blur()}">
-                        <button class="checklist-delete" onclick="deleteNote('${timer.id}', '${note.id}')" title="Delete">×</button>
+                            onclick="event.stopPropagation();"
+                            onfocus="event.stopPropagation();"
+                            onchange="event.stopPropagation(); updateNote('${timer.id}', '${note.id}', this.value)"
+                            onkeydown="event.stopPropagation(); if(event.key==='Enter'){this.blur()}"
+                            draggable="false">
+                        <button class="checklist-delete" onclick="event.stopPropagation(); deleteNote('${timer.id}', '${note.id}')" title="Delete">×</button>
                     </li>
                 `).join('')
                 : '<div class="checklist-empty">No notes yet</div>';
@@ -1246,7 +1260,7 @@
                         ${timer.name}<span class="timer-type-badge ${timer.type}">${typeBadge}</span>
                     </span>
                     <div class="timer-actions">
-                        <button class="timer-action-btn" onclick="openEditModal('${timer.id}')" title="Edit">✎</button>
+                        <button class="timer-action-btn" onclick="event.stopPropagation(); openEditModal('${timer.id}')" title="Edit">✎</button>
                     </div>
                 </div>
                 <div class="timer-content">
@@ -1265,24 +1279,24 @@
                         </div>
                         <div class="timer-controls">
                             ${isReady ? `
-                                <button class="timer-control-btn play-btn loot" onclick="pickupLoot('${timer.id}')" title="Picked up - Reset">
+                                <button class="timer-control-btn play-btn loot" onclick="event.stopPropagation(); pickupLoot('${timer.id}')" title="Picked up - Reset">
                                     <div class="icon-check"></div>
                                 </button>
                             ` : `
                                 <button class="timer-control-btn play-btn ${timer.type}${timer.running ? ' running' : ''}"
-                                        onclick="toggleTimer('${timer.id}')">
+                                        onclick="event.stopPropagation(); toggleTimer('${timer.id}')">
                                     <div class="${timer.running ? 'icon-pause' : 'icon-play'}"></div>
                                 </button>
-                                <button class="timer-control-btn reset-btn" onclick="resetTimer('${timer.id}')">
+                                <button class="timer-control-btn reset-btn" onclick="event.stopPropagation(); resetTimer('${timer.id}')">
                                     <div class="icon-reset"></div>
                                 </button>
                             `}
                         </div>
                     </div>
-                    <div class="timer-right">
+                    <div class="timer-right" draggable="false" ondragstart="return false;">
                         <div class="checklist-header">
                             <span class="checklist-title">Notes</span>
-                            <button class="checklist-add-btn" onclick="addNote('${timer.id}')" title="Add note">+</button>
+                            <button class="checklist-add-btn" onclick="event.stopPropagation(); addNote('${timer.id}')" title="Add note">+</button>
                         </div>
                         <ul class="checklist">
                             ${notesHtml}
